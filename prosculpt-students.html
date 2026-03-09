@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Prosculpt — Students</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Fraunces:wght@600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f7f6f2;--white:#fff;--ink:#1a1a1a;--muted:#6b6b6b;--border:#e4e2db;
+  --accent:#1a56db;--accent-light:#eff4ff;--green:#0e9f6e;--green-light:#e8faf4;
+  --amber:#d97706;--amber-light:#fffbeb;--red:#e53e3e;--red-light:#fff5f5;
+  --tag-bg:#f0f0ec;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);
+  --shadow-hover:0 6px 28px rgba(0,0,0,.11);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+
+/* NAV */
+nav{background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:60px;position:sticky;top:0;z-index:100}
+.nav-logo{font-family:'Fraunces',serif;font-size:1.35rem;letter-spacing:-.5px;cursor:pointer}
+.nav-logo span{color:var(--accent)}
+.nav-links{display:flex;gap:4px}
+.nav-link{padding:6px 14px;border-radius:8px;font-size:.83rem;font-weight:500;color:var(--muted);cursor:pointer;text-decoration:none;transition:background .15s,color .15s}
+.nav-link:hover{background:var(--bg);color:var(--ink)}
+.nav-link.active{background:var(--accent-light);color:var(--accent)}
+.nav-right{display:flex;align-items:center;gap:14px}
+.corp-badge{background:var(--accent-light);color:var(--accent);font-size:.73rem;font-weight:600;padding:4px 10px;border-radius:20px}
+.corp-name{font-size:.875rem;font-weight:500;color:var(--muted)}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;font-size:.78rem;font-weight:600;display:flex;align-items:center;justify-content:center}
+
+/* PAGE */
+.page{max-width:1140px;margin:0 auto;padding:32px 24px}
+.page-header{margin-bottom:24px;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.page-header h1{font-family:'Fraunces',serif;font-size:1.75rem;font-weight:700;letter-spacing:-.5px}
+.page-header p{font-size:.88rem;color:var(--muted);margin-top:4px;display:flex;align-items:center;gap:6px}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.8s infinite;flex-shrink:0}
+
+/* FILTER BAR */
+.filter-bar{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:14px 18px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:8px;box-shadow:var(--shadow)}
+.search-wrap{flex:1;min-width:200px;position:relative}
+.search-wrap svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.search-wrap input{width:100%;border:1px solid var(--border);border-radius:8px;padding:8px 12px 8px 34px;font-size:.875rem;font-family:'DM Sans',sans-serif;background:var(--bg);outline:none;color:var(--ink);transition:border .2s}
+.search-wrap input:focus{border-color:var(--accent);background:#fff}
+.filter-select{border:1px solid var(--border);border-radius:8px;padding:8px 30px 8px 11px;font-size:.83rem;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);outline:none;appearance:none;cursor:pointer;min-width:140px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' fill='%236b6b6b' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center}
+.filter-divider{width:1px;height:26px;background:var(--border)}
+
+.active-filters{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.af-label{font-size:.75rem;color:var(--muted)}
+.af-chip{display:inline-flex;align-items:center;gap:5px;background:var(--accent-light);color:var(--accent);font-size:.73rem;font-weight:600;padding:3px 10px;border-radius:20px;cursor:pointer}
+.af-chip:hover{background:#dce9ff}
+.af-clear{font-size:.73rem;color:var(--muted);text-decoration:underline;cursor:pointer;margin-left:4px}
+
+.result-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.result-count-text{font-size:.83rem;color:var(--muted)}
+.result-count-text strong{color:var(--ink)}
+
+/* STUDENT LIST */
+.student-list{display:flex;flex-direction:column;gap:14px}
+
+/* STUDENT CARD */
+.student-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:20px 22px;display:flex;gap:18px;align-items:flex-start;box-shadow:var(--shadow);transition:box-shadow .22s,transform .2s,border-color .22s;animation:fadeUp .35s ease both;position:relative;overflow:hidden}
+.student-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--green);border-radius:16px 0 0 16px;opacity:0;transition:opacity .2s}
+.student-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px);border-color:#d4d2cb}
+.student-card:hover::before{opacity:1}
+.student-card:nth-child(1){animation-delay:.04s}.student-card:nth-child(2){animation-delay:.08s}
+.student-card:nth-child(3){animation-delay:.12s}.student-card:nth-child(4){animation-delay:.16s}
+.student-card:nth-child(5){animation-delay:.2s}.student-card:nth-child(6){animation-delay:.24s}
+
+/* student photo */
+.student-photo{width:62px;height:62px;border-radius:50%;object-fit:cover;flex-shrink:0;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:1.2rem;font-weight:700;color:var(--accent);border:2px solid var(--border)}
+
+/* card content */
+.student-content{flex:1;min-width:0}
+.student-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:5px}
+.student-name{font-family:'Fraunces',serif;font-size:1rem;font-weight:600;letter-spacing:-.3px;cursor:pointer}
+.student-name:hover{color:var(--accent)}
+.status-badge{font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.status-badge.open{background:var(--green-light);color:var(--green)}
+.status-badge.placed{background:var(--tag-bg);color:var(--muted)}
+.status-badge.interviewing{background:var(--accent-light);color:var(--accent)}
+
+.student-meta{display:flex;gap:12px;font-size:.78rem;color:var(--muted);margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.student-meta span{display:flex;align-items:center;gap:4px}
+
+/* score + rank */
+.score-row{display:flex;gap:0;margin-bottom:12px}
+.score-block{display:flex;flex-direction:column;gap:2px;padding-right:18px}
+.score-block+.score-block{border-left:1px solid var(--border);padding-left:18px}
+.score-value{font-size:1rem;font-weight:600;letter-spacing:-.3px}
+.score-value.green{color:var(--green)}.score-value.accent{color:var(--accent)}
+.score-label{font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+
+/* skills */
+.skill-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.skill-label{font-size:.72rem;color:var(--muted)}
+.skill-tag{background:var(--tag-bg);border:1px solid var(--border);font-size:.7rem;font-weight:500;color:var(--ink);padding:2px 9px;border-radius:6px}
+.skill-tag.highlight{background:var(--accent-light);border-color:#c3d9ff;color:var(--accent)}
+
+/* preference */
+.pref-row{display:flex;gap:14px;flex-wrap:wrap;font-size:.78rem;color:var(--muted)}
+.pref-row span{display:flex;align-items:center;gap:5px}
+
+/* card actions */
+.student-actions{display:flex;flex-direction:column;align-items:flex-end;gap:10px;min-width:130px;flex-shrink:0}
+
+/* rank ring */
+.rank-badge{display:flex;flex-direction:column;align-items:center;gap:2px}
+.rank-num{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:700;color:var(--accent);line-height:1}
+.rank-text{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+
+/* btn */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:7px 14px;border-radius:8px;font-size:.78rem;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;border:none;transition:all .18s;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:#1446c0}
+.btn-secondary{background:transparent;color:var(--ink);border:1px solid var(--border)}.btn-secondary:hover{background:var(--bg)}
+.btn-green{background:var(--green-light);color:var(--green);border:1px solid #b7edd8}.btn-green:hover{background:#d1f5e8}
+.btn-sm{padding:5px 10px;font-size:.72rem}
+
+.btn-bookmark{width:30px;height:30px;border-radius:7px;background:transparent;border:1px solid var(--border);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s;font-size:.9rem}
+.btn-bookmark:hover{background:var(--amber-light);border-color:#f6cc52}
+.btn-bookmark.saved{background:var(--amber-light);border-color:#f6cc52;color:var(--amber)}
+
+.load-more{text-align:center;margin-top:28px}
+.load-more button{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:10px 28px;font-size:.875rem;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;color:var(--ink);transition:all .18s}
+.load-more button:hover{background:var(--bg)}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(10,10,10,.55);z-index:500;display:flex;align-items:flex-start;justify-content:center;padding:32px 16px;overflow-y:auto;opacity:0;pointer-events:none;transition:opacity .25s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--white);border-radius:20px;width:100%;max-width:720px;box-shadow:0 20px 60px rgba(0,0,0,.18);transform:translateY(24px);transition:transform .28s ease}
+.modal-overlay.open .modal{transform:translateY(0)}
+
+.modal-header{padding:28px 32px 22px;display:flex;gap:18px;align-items:flex-start;border-bottom:1px solid var(--border)}
+.modal-photo{width:72px;height:72px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:1.4rem;font-weight:700;color:var(--accent);border:2px solid var(--border);flex-shrink:0}
+.modal-info{flex:1}
+.modal-name{font-family:'Fraunces',serif;font-size:1.35rem;font-weight:700;letter-spacing:-.4px;margin-bottom:5px}
+.modal-close{width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:transparent;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:background .18s;flex-shrink:0}
+.modal-close:hover{background:var(--bg)}
+
+.modal-body{padding:24px 32px;max-height:65vh;overflow-y:auto;display:flex;flex-direction:column;gap:22px}
+.modal-section-title{font-family:'Fraunces',serif;font-size:.95rem;font-weight:600;margin-bottom:12px;letter-spacing:-.2px}
+.detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.detail-box{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:13px 15px}
+.detail-val{font-size:1.1rem;font-weight:600;letter-spacing:-.3px;margin-bottom:2px}
+.detail-val.green{color:var(--green)}.detail-val.accent{color:var(--accent)}
+.detail-lbl{font-size:.67rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+
+.cert-list{display:flex;flex-direction:column;gap:9px}
+.cert-item{display:flex;align-items:center;justify-content:space-between;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:10px 14px}
+.cert-item-left{display:flex;align-items:center;gap:10px}
+.cert-item-icon{width:28px;height:28px;border-radius:7px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:.85rem}
+.cert-item-name{font-size:.83rem;font-weight:500}
+.cert-item-issuer{font-size:.7rem;color:var(--muted)}
+.cert-date{font-size:.72rem;color:var(--muted)}
+
+.modal-footer{padding:18px 32px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:var(--bg)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo" onclick="window.location.href='prosculpt-dashboard.html'">Pro<span>sculpt</span></div>
+  <div class="nav-links">
+    <a class="nav-link" onclick="window.location.href='prosculpt-dashboard.html'">Dashboard</a>
+    <a class="nav-link" onclick="window.location.href='prosculpt-corporate-v3.html'">Colleges</a>
+    <a class="nav-link active">Students</a>
+    <a class="nav-link">Opportunities</a>
+    <a class="nav-link">Reports</a>
+  </div>
+  <div class="nav-right">
+    <span class="corp-badge">Corporate</span>
+    <span class="corp-name">Infosys Ltd.</span>
+    <div class="avatar">IN</div>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Student Pipeline</h1>
+      <p><span class="live-dot"></span> 1,284 students across 42 colleges · Assessment cleared</p>
+    </div>
+    <button class="btn btn-primary" style="padding:10px 18px;font-size:.83rem">+ Shortlist Selected</button>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filter-bar">
+    <div class="search-wrap">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" placeholder="Search by name, branch, skill…"/>
+    </div>
+    <div class="filter-divider"></div>
+    <select class="filter-select"><option>🏫 All Colleges</option><option>RV College of Engineering</option><option>Christ University</option><option>BMS College</option></select>
+    <select class="filter-select"><option>🎓 All Branches</option><option>CSE (486)</option><option>ECE (312)</option><option>MBA Finance (185)</option><option>Mechanical (164)</option></select>
+    <select class="filter-select"><option>📊 All Statuses</option><option>Open to Offers</option><option>Interviewing</option><option>Placed</option></select>
+    <select class="filter-select"><option>🏆 Sort: Score ↓</option><option>Rank ↑</option><option>Name A–Z</option><option>College</option></select>
+  </div>
+
+  <div class="active-filters">
+    <span class="af-label">Active:</span>
+    <span class="af-chip" onclick="this.remove()">RV College ×</span>
+    <span class="af-chip" onclick="this.remove()">Open to Offers ×</span>
+    <span class="af-clear" onclick="document.querySelectorAll('.af-chip').forEach(c=>c.remove())">Clear all</span>
+  </div>
+
+  <div class="result-row">
+    <span class="result-count-text"><strong>6 students</strong> shown · Sorted by assessment score</span>
+    <span style="font-size:.72rem;color:var(--green);font-weight:500;display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 1.8s infinite"></span> Live data</span>
+  </div>
+
+  <!-- STUDENT LIST -->
+  <div class="student-list" id="studentList"></div>
+  <div class="load-more"><button>Load more students ↓</button></div>
+</div>
+
+<!-- STUDENT MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+  <div class="modal" id="modalBox">
+    <div class="modal-header">
+      <div class="modal-photo" id="mPhoto">AK</div>
+      <div class="modal-info">
+        <div class="modal-name" id="mName">Arjun Kumar</div>
+        <div class="student-meta" id="mMeta" style="margin-bottom:8px"></div>
+        <div id="mBadges" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div>
+        <div class="modal-section-title">Assessment & Performance</div>
+        <div class="detail-grid" id="mStats"></div>
+      </div>
+      <div>
+        <div class="modal-section-title">Skills & Certifications</div>
+        <div class="cert-list" id="mCerts"></div>
+      </div>
+      <div>
+        <div class="modal-section-title">Preferences</div>
+        <div class="pref-row" id="mPrefs" style="font-size:.85rem;gap:18px"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">← Back</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-secondary">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download Resume
+        </button>
+        <button class="btn btn-primary">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Shortlist Student
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const students = [
+  {
+    initials:'AK', name:'Arjun Kumar', college:'RV College of Engineering',
+    branch:'Computer Science & Engg', year:'2025', status:'open',
+    score:'94/100', rank:'#2', percentile:'99th', cgpa:'8.9',
+    skills:['Java','Python','DSA','SQL','Spring Boot'],
+    highlight:['Java','Python'],
+    role:'Software Engineer', location:'Bengaluru / Remote',
+    certs:[
+      {icon:'☁️',name:'AWS Cloud Practitioner',issuer:'Amazon Web Services',date:'Jan 2025'},
+      {icon:'🐍',name:'Python for Data Science',issuer:'Coursera / IBM',date:'Nov 2024'},
+    ]
+  },
+  {
+    initials:'PS', name:'Priya Sharma', college:'RV College of Engineering',
+    branch:'Computer Science & Engg', year:'2025', status:'interviewing',
+    score:'91/100', rank:'#5', percentile:'98th', cgpa:'9.1',
+    skills:['React','Node.js','TypeScript','MongoDB','Figma'],
+    highlight:['React','TypeScript'],
+    role:'Full Stack Developer', location:'Bengaluru',
+    certs:[
+      {icon:'⚛️',name:'Meta Front-End Developer',issuer:'Meta / Coursera',date:'Dec 2024'},
+    ]
+  },
+  {
+    initials:'RV', name:'Rohan Verma', college:'BMS College of Engineering',
+    branch:'Electronics & Comm Engg', year:'2025', status:'open',
+    score:'88/100', rank:'#9', percentile:'97th', cgpa:'8.6',
+    skills:['Embedded C','VLSI','MATLAB','Python','IoT'],
+    highlight:['Embedded C','IoT'],
+    role:'Embedded Systems Engineer', location:'Bengaluru / Hyderabad',
+    certs:[
+      {icon:'🔧',name:'Embedded Systems Specialist',issuer:'NPTEL',date:'Oct 2024'},
+    ]
+  },
+  {
+    initials:'AN', name:'Ananya Nair', college:'Christ University',
+    branch:'MBA — Finance', year:'2025', status:'open',
+    score:'86/100', rank:'#12', percentile:'96th', cgpa:'8.4',
+    skills:['Financial Modelling','Excel','Power BI','SQL','Tableau'],
+    highlight:['Financial Modelling','Power BI'],
+    role:'Financial Analyst', location:'Bengaluru / Mumbai',
+    certs:[
+      {icon:'📊',name:'CFA Level 1 Cleared',issuer:'CFA Institute',date:'Feb 2025'},
+      {icon:'📈',name:'Power BI Data Analyst',issuer:'Microsoft',date:'Sep 2024'},
+    ]
+  },
+  {
+    initials:'KM', name:'Karan Mehta', college:'RV College of Engineering',
+    branch:'Information Science & Engg', year:'2025', status:'placed',
+    score:'85/100', rank:'#14', percentile:'95th', cgpa:'8.2',
+    skills:['Machine Learning','TensorFlow','Python','NLP','Scikit-learn'],
+    highlight:['Machine Learning','TensorFlow'],
+    role:'ML Engineer', location:'Bengaluru',
+    certs:[
+      {icon:'🤖',name:'TensorFlow Developer Certificate',issuer:'Google',date:'Nov 2024'},
+    ]
+  },
+  {
+    initials:'SR', name:'Sneha Rao', college:'BMS College of Engineering',
+    branch:'Computer Science & Engg', year:'2025', status:'open',
+    score:'83/100', rank:'#18', percentile:'94th', cgpa:'8.0',
+    skills:['Android Dev','Kotlin','Firebase','REST APIs','Git'],
+    highlight:['Kotlin','Android Dev'],
+    role:'Android Developer', location:'Bengaluru / Pune',
+    certs:[
+      {icon:'📱',name:'Android Developer Nanodegree',issuer:'Udacity',date:'Jan 2025'},
+    ]
+  }
+];
+
+const statusLabel = {open:'Open to Offers', interviewing:'Interviewing', placed:'Placed'};
+const statusClass = {open:'open', interviewing:'interviewing', placed:'placed'};
+
+function renderStudents() {
+  const list = document.getElementById('studentList');
+  list.innerHTML = students.map((s,i) => `
+    <div class="student-card" style="animation-delay:${i*0.05}s">
+      <div class="student-photo">${s.initials}</div>
+      <div class="student-content">
+        <div class="student-top">
+          <span class="student-name" onclick="openModal(${i})">${s.name}</span>
+          <span class="status-badge ${statusClass[s.status]}">${statusLabel[s.status]}</span>
+        </div>
+        <div class="student-meta">
+          <span><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>${s.college}</span>
+          <span>·</span><span>${s.branch}</span><span>·</span><span>📅 ${s.year} Batch</span>
+        </div>
+        <div class="score-row">
+          <div class="score-block"><span class="score-value green">${s.score}</span><span class="score-label">Assessment Score</span></div>
+          <div class="score-block"><span class="score-value accent">${s.percentile}</span><span class="score-label">Percentile</span></div>
+          <div class="score-block"><span class="score-value">${s.cgpa}</span><span class="score-label">CGPA</span></div>
+        </div>
+        <div class="skill-row">
+          <span class="skill-label">Skills:</span>
+          ${s.skills.map(sk => `<span class="skill-tag${s.highlight.includes(sk)?' highlight':''}">${sk}</span>`).join('')}
+        </div>
+        <div class="pref-row">
+          <span><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>${s.role}</span>
+          <span><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${s.location}</span>
+        </div>
+      </div>
+      <div class="student-actions">
+        <div class="rank-badge">
+          <span class="rank-num">${s.rank}</span>
+          <span class="rank-text">College Rank</span>
+        </div>
+        <button class="btn-bookmark" onclick="this.classList.toggle('saved')">🔖</button>
+        <button class="btn btn-secondary btn-sm" onclick="openModal(${i})">View Profile</button>
+        <button class="btn btn-primary btn-sm">
+          <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Shortlist
+        </button>
+        <button class="btn btn-secondary btn-sm">
+          <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Resume
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openModal(i) {
+  const s = students[i];
+  document.getElementById('mPhoto').textContent = s.initials;
+  document.getElementById('mName').textContent = s.name;
+  document.getElementById('mMeta').innerHTML = `<span>${s.college}</span><span>·</span><span>${s.branch}</span><span>·</span><span>📅 ${s.year} Batch</span>`;
+  document.getElementById('mBadges').innerHTML = `
+    <span class="status-badge ${statusClass[s.status]}" style="font-size:.72rem">${statusLabel[s.status]}</span>
+    <span style="background:var(--accent-light);color:var(--accent);font-size:.7rem;font-weight:700;padding:2px 9px;border-radius:20px">${s.rank} College Rank</span>`;
+  document.getElementById('mStats').innerHTML = `
+    <div class="detail-box"><div class="detail-val green">${s.score}</div><div class="detail-lbl">Assessment Score</div></div>
+    <div class="detail-box"><div class="detail-val accent">${s.percentile}</div><div class="detail-lbl">Percentile</div></div>
+    <div class="detail-box"><div class="detail-val">${s.cgpa}</div><div class="detail-lbl">CGPA</div></div>`;
+  document.getElementById('mCerts').innerHTML = s.certs.map(c => `
+    <div class="cert-item">
+      <div class="cert-item-left">
+        <div class="cert-item-icon">${c.icon}</div>
+        <div><div class="cert-item-name">${c.name}</div><div class="cert-item-issuer">${c.issuer}</div></div>
+      </div>
+      <div class="cert-date">${c.date}</div>
+    </div>`).join('') + `
+    <div style="margin-top:10px"><span class="skill-label" style="font-size:.73rem;color:var(--muted)">All skills: </span>${s.skills.map(sk=>`<span class="skill-tag${s.highlight.includes(sk)?' highlight':''}" style="margin:2px">${sk}</span>`).join('')}</div>`;
+  document.getElementById('mPrefs').innerHTML = `
+    <span><strong>Preferred Role:</strong> ${s.role}</span>
+    <span><strong>Location:</strong> ${s.location}</span>`;
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function handleOverlayClick(e) { if(e.target===document.getElementById('modalOverlay')) closeModal(); }
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+renderStudents();
+</script>
+</body>
+</html>

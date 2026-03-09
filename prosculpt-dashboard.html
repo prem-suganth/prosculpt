@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Prosculpt — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Fraunces:wght@600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f7f6f2;--white:#fff;--ink:#1a1a1a;--muted:#6b6b6b;--border:#e4e2db;
+  --accent:#1a56db;--accent-light:#eff4ff;--green:#0e9f6e;--green-light:#e8faf4;
+  --amber:#d97706;--amber-light:#fffbeb;--red:#e53e3e;--red-light:#fff5f5;
+  --navy:#0f1f54;--tag-bg:#f0f0ec;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);
+  --shadow-hover:0 6px 28px rgba(0,0,0,.10);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+
+/* NAV */
+nav{background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:60px;position:sticky;top:0;z-index:100}
+.nav-logo{font-family:'Fraunces',serif;font-size:1.35rem;letter-spacing:-.5px;cursor:pointer}
+.nav-logo span{color:var(--accent)}
+.nav-links{display:flex;gap:4px}
+.nav-link{padding:6px 14px;border-radius:8px;font-size:.83rem;font-weight:500;color:var(--muted);cursor:pointer;text-decoration:none;transition:background .15s,color .15s}
+.nav-link:hover{background:var(--bg);color:var(--ink)}
+.nav-link.active{background:var(--accent-light);color:var(--accent)}
+.nav-right{display:flex;align-items:center;gap:14px}
+.notif{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;transition:background .15s}
+.notif:hover{background:var(--bg)}
+.notif-dot{position:absolute;top:7px;right:7px;width:7px;height:7px;border-radius:50%;background:var(--red);border:2px solid var(--white)}
+.corp-badge{background:var(--accent-light);color:var(--accent);font-size:.73rem;font-weight:600;padding:4px 10px;border-radius:20px}
+.corp-name{font-size:.875rem;font-weight:500;color:var(--muted)}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;font-size:.78rem;font-weight:600;display:flex;align-items:center;justify-content:center;cursor:pointer}
+
+/* PAGE */
+.page{max-width:1140px;margin:0 auto;padding:32px 24px}
+
+/* WELCOME BANNER */
+.welcome-banner{background:var(--navy);border-radius:20px;padding:32px 36px;display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;position:relative;overflow:hidden}
+.welcome-banner::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 90% 50%,rgba(26,86,219,.5) 0%,transparent 55%),radial-gradient(ellipse at 10% 100%,rgba(14,159,110,.2) 0%,transparent 50%);pointer-events:none}
+.welcome-grid{position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.04) 1px,transparent 1px);background-size:28px 28px;pointer-events:none}
+.welcome-text{position:relative;z-index:1}
+.welcome-text h2{font-family:'Fraunces',serif;font-size:1.6rem;color:#fff;letter-spacing:-.4px;margin-bottom:6px}
+.welcome-text p{font-size:.875rem;color:rgba(255,255,255,.55);max-width:420px}
+.welcome-actions{display:flex;gap:10px;position:relative;z-index:1}
+.btn-white{background:#fff;color:var(--ink);border:none;border-radius:10px;padding:10px 20px;font-size:.83rem;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:6px}
+.btn-white:hover{background:#f0efea}
+.btn-outline-white{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.3);border-radius:10px;padding:10px 20px;font-size:.83rem;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .18s}
+.btn-outline-white:hover{border-color:rgba(255,255,255,.6)}
+
+/* STATS GRID */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+.kpi-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:20px 22px;box-shadow:var(--shadow);transition:box-shadow .2s,transform .2s}
+.kpi-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px)}
+.kpi-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+.kpi-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.kpi-icon.blue{background:var(--accent-light)}
+.kpi-icon.green{background:var(--green-light)}
+.kpi-icon.amber{background:var(--amber-light)}
+.kpi-icon.red{background:var(--red-light)}
+.kpi-trend{font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:20px}
+.kpi-trend.up{background:var(--green-light);color:var(--green)}
+.kpi-trend.down{background:var(--red-light);color:var(--red)}
+.kpi-trend.neu{background:var(--tag-bg);color:var(--muted)}
+.kpi-value{font-family:'Fraunces',serif;font-size:2rem;font-weight:700;letter-spacing:-.5px;margin-bottom:3px}
+.kpi-label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+
+/* TWO COLUMN */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:28px}
+.three-col{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:28px}
+
+/* SECTION CARD */
+.section-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:22px;box-shadow:var(--shadow)}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.section-title{font-family:'Fraunces',serif;font-size:1rem;font-weight:600;letter-spacing:-.3px}
+.section-link{font-size:.78rem;color:var(--accent);font-weight:500;cursor:pointer;text-decoration:none}
+.section-link:hover{text-decoration:underline}
+
+/* ACTIVITY LIST */
+.activity-list{display:flex;flex-direction:column;gap:12px}
+.activity-item{display:flex;align-items:flex-start;gap:12px}
+.act-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.act-dot.green{background:var(--green)}
+.act-dot.blue{background:var(--accent)}
+.act-dot.amber{background:var(--amber)}
+.act-dot.red{background:var(--red)}
+.act-text{font-size:.83rem;line-height:1.5;flex:1}
+.act-text strong{font-weight:600}
+.act-time{font-size:.72rem;color:var(--muted);white-space:nowrap;margin-top:2px}
+
+/* QUICK ACTIONS */
+.quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.qa-btn{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;text-align:left;transition:all .18s;display:flex;align-items:center;gap:12px}
+.qa-btn:hover{border-color:var(--accent);background:var(--accent-light)}
+.qa-btn:hover .qa-label{color:var(--accent)}
+.qa-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.qa-label{font-size:.82rem;font-weight:600;color:var(--ink);margin-bottom:2px}
+.qa-sub{font-size:.7rem;color:var(--muted)}
+
+/* TOP COLLEGES TABLE */
+.top-table{width:100%;border-collapse:collapse}
+.top-table th{font-size:.68rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:600;padding:7px 10px;text-align:left;border-bottom:2px solid var(--border)}
+.top-table td{padding:11px 10px;font-size:.82rem;border-bottom:1px solid var(--border);vertical-align:middle}
+.top-table tr:last-child td{border-bottom:none}
+.top-table tr:hover td{background:var(--bg)}
+.top-table .college-name-cell{font-weight:600;color:var(--accent);cursor:pointer}
+.top-table .college-name-cell:hover{text-decoration:underline}
+.pill-sm{font-size:.67rem;font-weight:600;padding:2px 8px;border-radius:20px}
+.pill-sm.green{background:var(--green-light);color:var(--green)}
+.pill-sm.blue{background:var(--accent-light);color:var(--accent)}
+
+/* PENDING TABLE */
+.pending-list{display:flex;flex-direction:column;gap:10px}
+.pending-item{display:flex;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
+.pending-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+.pending-icon.amber{background:var(--amber-light)}
+.pending-icon.blue{background:var(--accent-light)}
+.pending-text{flex:1;font-size:.82rem}
+.pending-text strong{font-weight:600;display:block}
+.pending-text span{color:var(--muted);font-size:.75rem}
+.pending-action{font-size:.75rem;font-weight:600;color:var(--accent);cursor:pointer;white-space:nowrap}
+.pending-action:hover{text-decoration:underline}
+
+/* PIPELINE MINI BARS */
+.pipeline-row{display:flex;flex-direction:column;gap:12px}
+.pipe-item{display:flex;flex-direction:column;gap:5px}
+.pipe-top{display:flex;justify-content:space-between;align-items:center}
+.pipe-label{font-size:.78rem;font-weight:500}
+.pipe-val{font-size:.78rem;color:var(--muted)}
+.pipe-bar-bg{height:6px;background:var(--tag-bg);border-radius:99px;overflow:hidden}
+.pipe-bar-fill{height:100%;border-radius:99px}
+.pipe-bar-fill.blue{background:linear-gradient(90deg,var(--accent),#60a5fa)}
+.pipe-bar-fill.green{background:linear-gradient(90deg,var(--green),#34d399)}
+.pipe-bar-fill.amber{background:linear-gradient(90deg,var(--amber),#fbbf24)}
+
+/* POSTED JOBS */
+.job-pill-row{display:flex;flex-direction:column;gap:10px}
+.job-pill{display:flex;align-items:center;justify-content:space-between;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
+.job-pill-left{display:flex;flex-direction:column;gap:2px}
+.job-pill-title{font-size:.83rem;font-weight:600}
+.job-pill-meta{font-size:.72rem;color:var(--muted)}
+.job-pill-right{display:flex;align-items:center;gap:8px}
+.applicant-count{font-size:.72rem;font-weight:600;color:var(--green);background:var(--green-light);padding:2px 8px;border-radius:20px}
+.job-status{font-size:.7rem;font-weight:600;padding:2px 8px;border-radius:20px}
+.job-status.active{background:var(--green-light);color:var(--green)}
+.job-status.closed{background:var(--tag-bg);color:var(--muted)}
+
+/* BTN */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:8px 16px;border-radius:8px;font-size:.79rem;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;border:none;transition:all .18s;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:#1446c0}
+.btn-secondary{background:transparent;color:var(--ink);border:1px solid var(--border)}.btn-secondary:hover{background:var(--bg)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.kpi-card:nth-child(1){animation:fadeUp .3s .05s both}
+.kpi-card:nth-child(2){animation:fadeUp .3s .1s both}
+.kpi-card:nth-child(3){animation:fadeUp .3s .15s both}
+.kpi-card:nth-child(4){animation:fadeUp .3s .2s both}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo" onclick="window.location.href='prosculpt-login.html'">Pro<span>sculpt</span></div>
+  <div class="nav-links">
+    <a class="nav-link active">Dashboard</a>
+    <a class="nav-link" onclick="window.location.href='prosculpt-corporate-v3.html'">Colleges</a>
+    <a class="nav-link" onclick="window.location.href='prosculpt-students.html'">Students</a>
+    <a class="nav-link">Opportunities</a>
+    <a class="nav-link">Reports</a>
+  </div>
+  <div class="nav-right">
+    <div class="notif">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="notif-dot"></span>
+    </div>
+    <span class="corp-badge">Corporate</span>
+    <span class="corp-name">Infosys Ltd.</span>
+    <div class="avatar">IN</div>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- WELCOME -->
+  <div class="welcome-banner">
+    <div class="welcome-grid"></div>
+    <div class="welcome-text">
+      <h2>Good morning, Infosys 👋</h2>
+      <p>You have <strong style="color:#93c5fd">3 pending responses</strong> from colleges and <strong style="color:#6ee7b7">107 new students</strong> who cleared assessments this week.</p>
+    </div>
+    <div class="welcome-actions">
+      <button class="btn-white" onclick="window.location.href='prosculpt-corporate-v3.html'">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Browse Colleges
+      </button>
+      <button class="btn-outline-white">+ Post Opportunity</button>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-top">
+        <div class="kpi-icon blue">🎓</div>
+        <span class="kpi-trend up">↑ 14%</span>
+      </div>
+      <div class="kpi-value">42</div>
+      <div class="kpi-label">Colleges Engaged</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-top">
+        <div class="kpi-icon green">👥</div>
+        <span class="kpi-trend up">↑ 28%</span>
+      </div>
+      <div class="kpi-value">1,284</div>
+      <div class="kpi-label">Students in Pipeline</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-top">
+        <div class="kpi-icon amber">📋</div>
+        <span class="kpi-trend neu">→ 0%</span>
+      </div>
+      <div class="kpi-value">8</div>
+      <div class="kpi-label">Active Opportunities</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-top">
+        <div class="kpi-icon green">✅</div>
+        <span class="kpi-trend up">↑ 6%</span>
+      </div>
+      <div class="kpi-value">91%</div>
+      <div class="kpi-label">Offer Acceptance Rate</div>
+    </div>
+  </div>
+
+  <!-- ROW 2: Top Colleges + Quick Actions -->
+  <div class="three-col">
+    <div class="section-card">
+      <div class="section-header">
+        <span class="section-title">Top Matching Colleges</span>
+        <a class="section-link" onclick="window.location.href='prosculpt-corporate-v3.html'">View all →</a>
+      </div>
+      <table class="top-table">
+        <thead>
+          <tr><th>College</th><th>Placeable</th><th>Match</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="college-name-cell" onclick="window.location.href='prosculpt-corporate-v3.html'">RV College of Engineering</span><br><small style="color:var(--muted);font-size:.7rem">Engineering · Bengaluru</small></td>
+            <td><strong>486</strong></td>
+            <td><span class="pill-sm green">91%</span></td>
+            <td><span class="pill-sm blue">Engaged</span></td>
+          </tr>
+          <tr>
+            <td><span class="college-name-cell" onclick="window.location.href='prosculpt-corporate-v3.html'">Christ University</span><br><small style="color:var(--muted);font-size:.7rem">MBA · Bengaluru</small></td>
+            <td><strong>310</strong></td>
+            <td><span class="pill-sm green">82%</span></td>
+            <td><span class="pill-sm blue">Engaged</span></td>
+          </tr>
+          <tr>
+            <td><span class="college-name-cell">BMS College of Engg</span><br><small style="color:var(--muted);font-size:.7rem">Engineering · Bengaluru</small></td>
+            <td><strong>520</strong></td>
+            <td><span class="pill-sm green">78%</span></td>
+            <td><span class="pill-sm blue">Engaged</span></td>
+          </tr>
+          <tr>
+            <td><span class="college-name-cell">Symbiosis — MBA</span><br><small style="color:var(--muted);font-size:.7rem">MBA · Mysuru</small></td>
+            <td><strong>240</strong></td>
+            <td><span class="pill-sm green">71%</span></td>
+            <td><span style="font-size:.7rem;color:var(--muted)">Not contacted</span></td>
+          </tr>
+          <tr>
+            <td><span class="college-name-cell">PESIT South Campus</span><br><small style="color:var(--muted);font-size:.7rem">Engineering · Bengaluru</small></td>
+            <td><strong>398</strong></td>
+            <td><span class="pill-sm green">68%</span></td>
+            <td><span style="font-size:.7rem;color:var(--muted)">Not contacted</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-card">
+      <div class="section-header">
+        <span class="section-title">Quick Actions</span>
+      </div>
+      <div class="quick-actions">
+        <button class="qa-btn" onclick="window.location.href='prosculpt-corporate-v3.html'">
+          <div class="qa-icon" style="background:var(--accent-light)">🏫</div>
+          <div><div class="qa-label">Browse Colleges</div><div class="qa-sub">347 available</div></div>
+        </button>
+        <button class="qa-btn" onclick="window.location.href='prosculpt-students.html'">
+          <div class="qa-icon" style="background:var(--green-light)">👤</div>
+          <div><div class="qa-label">View Students</div><div class="qa-sub">1,284 in pipeline</div></div>
+        </button>
+        <button class="qa-btn">
+          <div class="qa-icon" style="background:var(--amber-light)">📋</div>
+          <div><div class="qa-label">Post Opportunity</div><div class="qa-sub">8 active roles</div></div>
+        </button>
+        <button class="qa-btn">
+          <div class="qa-icon" style="background:#f3e8ff)">📊</div>
+          <div><div class="qa-label">View Reports</div><div class="qa-sub">Q1 2025 ready</div></div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 3: Activity + Pipeline + Jobs -->
+  <div class="two-col">
+    <div style="display:flex;flex-direction:column;gap:18px">
+
+      <!-- PIPELINE -->
+      <div class="section-card">
+        <div class="section-header">
+          <span class="section-title">Hiring Pipeline</span>
+          <a class="section-link">Details →</a>
+        </div>
+        <div class="pipeline-row">
+          <div class="pipe-item">
+            <div class="pipe-top"><span class="pipe-label">Students Identified</span><span class="pipe-val">1,284</span></div>
+            <div class="pipe-bar-bg"><div class="pipe-bar-fill blue" style="width:100%"></div></div>
+          </div>
+          <div class="pipe-item">
+            <div class="pipe-top"><span class="pipe-label">Assessment Cleared</span><span class="pipe-val">896 · 70%</span></div>
+            <div class="pipe-bar-bg"><div class="pipe-bar-fill green" style="width:70%"></div></div>
+          </div>
+          <div class="pipe-item">
+            <div class="pipe-top"><span class="pipe-label">Interview Scheduled</span><span class="pipe-val">312 · 24%</span></div>
+            <div class="pipe-bar-bg"><div class="pipe-bar-fill amber" style="width:24%"></div></div>
+          </div>
+          <div class="pipe-item">
+            <div class="pipe-top"><span class="pipe-label">Offers Extended</span><span class="pipe-val">148 · 12%</span></div>
+            <div class="pipe-bar-bg"><div class="pipe-bar-fill blue" style="width:12%"></div></div>
+          </div>
+          <div class="pipe-item">
+            <div class="pipe-top"><span class="pipe-label">Offers Accepted</span><span class="pipe-val">135 · 91%</span></div>
+            <div class="pipe-bar-bg"><div class="pipe-bar-fill green" style="width:11%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PENDING -->
+      <div class="section-card">
+        <div class="section-header">
+          <span class="section-title">Pending Actions</span>
+          <span style="font-size:.72rem;background:var(--red-light);color:var(--red);padding:2px 8px;border-radius:20px;font-weight:600">3 urgent</span>
+        </div>
+        <div class="pending-list">
+          <div class="pending-item">
+            <div class="pending-icon amber">📬</div>
+            <div class="pending-text"><strong>RV College replied to your mail</strong><span>Dr. Shalini Prasad — 2 hrs ago</span></div>
+            <span class="pending-action">Reply →</span>
+          </div>
+          <div class="pending-item">
+            <div class="pending-icon blue">📋</div>
+            <div class="pending-text"><strong>SE Role — 3 new applicants</strong><span>From BMS College · Needs review</span></div>
+            <span class="pending-action" onclick="window.location.href='prosculpt-students.html'">Review →</span>
+          </div>
+          <div class="pending-item">
+            <div class="pending-icon amber">🗓️</div>
+            <div class="pending-text"><strong>Drive scheduled at Christ Univ</strong><span>March 22, 2025 · Confirm attendance</span></div>
+            <span class="pending-action">Confirm →</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <!-- ACTIVE JOBS -->
+      <div class="section-card">
+        <div class="section-header">
+          <span class="section-title">Active Opportunities</span>
+          <a class="section-link">Manage →</a>
+        </div>
+        <div class="job-pill-row">
+          <div class="job-pill">
+            <div class="job-pill-left"><div class="job-pill-title">Software Engineer</div><div class="job-pill-meta">CSE/ECE · ₹6–9 LPA · 42 colleges</div></div>
+            <div class="job-pill-right"><span class="applicant-count">284 applicants</span><span class="job-status active">Live</span></div>
+          </div>
+          <div class="job-pill">
+            <div class="job-pill-left"><div class="job-pill-title">Data Analyst</div><div class="job-pill-meta">Any branch · ₹5–7 LPA · 28 colleges</div></div>
+            <div class="job-pill-right"><span class="applicant-count">142 applicants</span><span class="job-status active">Live</span></div>
+          </div>
+          <div class="job-pill">
+            <div class="job-pill-left"><div class="job-pill-title">Systems Analyst</div><div class="job-pill-meta">CSE/ISE · ₹7–10 LPA · 18 colleges</div></div>
+            <div class="job-pill-right"><span class="applicant-count">96 applicants</span><span class="job-status active">Live</span></div>
+          </div>
+          <div class="job-pill">
+            <div class="job-pill-left"><div class="job-pill-title">HR Business Partner</div><div class="job-pill-meta">MBA-HR · ₹5–6 LPA · 12 colleges</div></div>
+            <div class="job-pill-right"><span class="applicant-count">38 applicants</span><span class="job-status closed">Closed</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIVITY -->
+      <div class="section-card">
+        <div class="section-header">
+          <span class="section-title">Recent Activity</span>
+          <a class="section-link">View all →</a>
+        </div>
+        <div class="activity-list">
+          <div class="activity-item">
+            <div class="act-dot green"></div>
+            <div><div class="act-text"><strong>107 students</strong> cleared assessment at RV College</div><div class="act-time">Today, 9:14 AM</div></div>
+          </div>
+          <div class="activity-item">
+            <div class="act-dot blue"></div>
+            <div><div class="act-text">You posted <strong>Software Engineer</strong> to 42 colleges</div><div class="act-time">Yesterday, 4:30 PM</div></div>
+          </div>
+          <div class="activity-item">
+            <div class="act-dot amber"></div>
+            <div><div class="act-text"><strong>Drive confirmed</strong> at Christ University — March 22</div><div class="act-time">Mar 8, 11:00 AM</div></div>
+          </div>
+          <div class="activity-item">
+            <div class="act-dot green"></div>
+            <div><div class="act-text"><strong>135 offer letters</strong> accepted this quarter</div><div class="act-time">Mar 7, 2:15 PM</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

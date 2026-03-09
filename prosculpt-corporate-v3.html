@@ -241,7 +241,13 @@ nav{background:var(--white);border-bottom:1px solid var(--border);display:flex;a
 
 <!-- NAV -->
 <nav>
-  <div class="nav-logo">Pro<span>sculpt</span></div>
+  <div class="nav-logo" onclick="window.location.href='prosculpt-dashboard.html'" style="cursor:pointer">Pro<span>sculpt</span></div>
+  <div style="display:flex;gap:4px">
+    <a onclick="window.location.href='prosculpt-dashboard.html'" style="padding:6px 14px;border-radius:8px;font-size:.83rem;font-weight:500;color:var(--muted);cursor:pointer;text-decoration:none">Dashboard</a>
+    <a style="padding:6px 14px;border-radius:8px;font-size:.83rem;font-weight:500;background:var(--accent-light);color:var(--accent);cursor:pointer">Colleges</a>
+    <a onclick="window.location.href='prosculpt-students.html'" style="padding:6px 14px;border-radius:8px;font-size:.83rem;font-weight:500;color:var(--muted);cursor:pointer;text-decoration:none">Students</a>
+    <a style="padding:6px 14px;border-radius:8px;font-size:.83rem;font-weight:500;color:var(--muted);cursor:pointer">Opportunities</a>
+  </div>
   <div class="nav-right">
     <span class="corp-badge">Corporate</span>
     <span class="corp-name">Infosys Ltd.</span>
