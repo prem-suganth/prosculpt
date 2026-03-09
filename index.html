@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Prosculpt — Corporate Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Fraunces:wght@600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f7f6f2;--white:#fff;--ink:#1a1a1a;--muted:#6b6b6b;--border:#e4e2db;
+  --accent:#1a56db;--accent-light:#eff4ff;--green:#0e9f6e;--green-light:#e8faf4;
+  --amber:#d97706;--amber-light:#fffbeb;--red:#e53e3e;--red-light:#fff5f5;
+  --tag-bg:#f0f0ec;--shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);
+  --shadow-hover:0 6px 28px rgba(0,0,0,.11);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+
+/* ── NAV ── */
+nav{background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:60px;position:sticky;top:0;z-index:200;}
+.nav-logo{font-family:'Fraunces',serif;font-size:1.35rem;letter-spacing:-.5px}
+.nav-logo span{color:var(--accent)}
+.nav-right{display:flex;align-items:center;gap:16px}
+.corp-badge{background:var(--accent-light);color:var(--accent);font-size:.73rem;font-weight:600;padding:4px 10px;border-radius:20px}
+.corp-name{font-size:.875rem;font-weight:500;color:var(--muted)}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;font-size:.78rem;font-weight:600;display:flex;align-items:center;justify-content:center}
+
+/* ── PAGE ── */
+.page{max-width:1140px;margin:0 auto;padding:32px 24px}
+.page-header{margin-bottom:24px}
+.page-header h1{font-family:'Fraunces',serif;font-size:1.75rem;font-weight:700;letter-spacing:-.5px}
+.page-header p{font-size:.88rem;color:var(--muted);margin-top:4px;display:flex;align-items:center;gap:6px}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.8s infinite;flex-shrink:0}
+
+/* ── FILTERS ── */
+.filter-bar{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:14px 18px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:8px;box-shadow:var(--shadow)}
+.search-wrap{flex:1;min-width:200px;position:relative}
+.search-wrap svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.search-wrap input{width:100%;border:1px solid var(--border);border-radius:8px;padding:8px 12px 8px 34px;font-size:.875rem;font-family:'DM Sans',sans-serif;background:var(--bg);outline:none;color:var(--ink);transition:border .2s}
+.search-wrap input:focus{border-color:var(--accent);background:#fff}
+.filter-select{border:1px solid var(--border);border-radius:8px;padding:8px 30px 8px 11px;font-size:.83rem;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);outline:none;appearance:none;cursor:pointer;min-width:140px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' fill='%236b6b6b' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;transition:border .2s}
+.filter-select:focus{border-color:var(--accent)}
+.filter-divider{width:1px;height:26px;background:var(--border)}
+.sort-label{font-size:.78rem;color:var(--muted);white-space:nowrap}
+.active-filters{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;min-height:28px}
+.af-label{font-size:.75rem;color:var(--muted)}
+.af-chip{display:inline-flex;align-items:center;gap:5px;background:var(--accent-light);color:var(--accent);font-size:.73rem;font-weight:600;padding:3px 10px;border-radius:20px;cursor:pointer}
+.af-chip:hover{background:#dce9ff}
+.af-clear{font-size:.73rem;color:var(--muted);text-decoration:underline;cursor:pointer;margin-left:4px}
+.result-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.result-count-text{font-size:.83rem;color:var(--muted)}
+.result-count-text strong{color:var(--ink)}
+.avail-badge{font-size:.72rem;color:var(--green);font-weight:500;display:flex;align-items:center;gap:5px}
+.avail-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.8s infinite}
+
+/* ── COLLEGE LIST ── */
+.college-list{display:flex;flex-direction:column;gap:18px}
+
+/* ── CARD ── */
+.college-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:22px 24px;box-shadow:var(--shadow);transition:box-shadow .22s,transform .22s,border-color .22s;animation:fadeUp .38s ease both;position:relative;overflow:hidden}
+.college-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent);border-radius:16px 0 0 16px;opacity:0;transition:opacity .2s}
+.college-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px);border-color:#d4d2cb}
+.college-card:hover::before{opacity:1}
+.college-card:nth-child(1){animation-delay:.05s}.college-card:nth-child(2){animation-delay:.1s}
+.college-card:nth-child(3){animation-delay:.15s}.college-card:nth-child(4){animation-delay:.2s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+/* card layout */
+.card-main{display:flex;gap:20px;align-items:flex-start}
+.card-content{flex:1;min-width:0}
+.card-sidebar{display:flex;flex-direction:column;align-items:flex-end;gap:10px;min-width:90px}
+
+/* logo top-right */
+.college-logo{width:68px;height:68px;border-radius:12px;border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:1.15rem;font-weight:700;color:var(--accent);flex-shrink:0;letter-spacing:-1px}
+
+/* name + badges */
+.college-name{font-family:'Fraunces',serif;font-size:1.08rem;font-weight:600;color:var(--accent);cursor:pointer;letter-spacing:-.3px}
+.college-name:hover{text-decoration:underline}
+.badges-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:5px;margin-bottom:6px}
+.type-pill{background:var(--accent-light);color:var(--accent);font-size:.68rem;font-weight:700;padding:2px 9px;border-radius:20px;letter-spacing:.4px;text-transform:uppercase}
+.hired-before{background:var(--green-light);color:var(--green);font-size:.68rem;font-weight:700;padding:2px 9px;border-radius:20px;letter-spacing:.4px;display:flex;align-items:center;gap:4px}
+.nirf-badge{background:var(--amber-light);color:var(--amber);font-size:.68rem;font-weight:700;padding:2px 9px;border-radius:20px;letter-spacing:.3px}
+
+.college-meta{display:flex;align-items:center;gap:12px;font-size:.79rem;color:var(--muted);margin-bottom:16px;flex-wrap:wrap}
+.college-meta span{display:flex;align-items:center;gap:4px}
+
+/* stats */
+.stats-grid{display:flex;flex-wrap:wrap;gap:0;margin-bottom:14px}
+.stat{display:flex;flex-direction:column;gap:2px;padding-right:20px}
+.stat+.stat{border-left:1px solid var(--border);padding-left:20px}
+.stat:last-child{padding-right:0}
+.stat-value{font-size:1.05rem;font-weight:600;color:var(--ink);letter-spacing:-.4px}
+.stat-value.green{color:var(--green)}.stat-value.accent{color:var(--accent)}
+.stat-label{font-size:.67rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+
+/* ratio bar */
+.ratio-bar-wrap{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.ratio-label{font-size:.75rem;color:var(--muted);min-width:160px}
+.ratio-bar-bg{flex:1;height:5px;background:var(--tag-bg);border-radius:99px;overflow:hidden;max-width:200px}
+.ratio-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent) 0%,#60a5fa 100%);border-radius:99px}
+.ratio-val{font-size:.8rem;font-weight:600;color:var(--accent);min-width:36px}
+
+/* branch row */
+.branch-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.branch-label{font-size:.73rem;color:var(--muted);margin-right:2px}
+.branch-chip{background:var(--tag-bg);border:1px solid var(--border);font-size:.71rem;font-weight:500;color:var(--ink);padding:2px 9px;border-radius:6px}
+.branch-chip strong{color:var(--accent)}
+
+/* cert */
+.cert-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.cert-label{font-size:.73rem;color:var(--muted);margin-right:2px}
+.cert-tag{background:var(--tag-bg);border:1px solid var(--border);color:var(--ink);font-size:.71rem;font-weight:500;padding:3px 9px;border-radius:20px}
+.cert-tag.gold{background:var(--amber-light);border-color:#f6cc52;color:#8a6a00}
+
+/* prev companies */
+.prev-companies{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:4px}
+.prev-label{font-size:.73rem;color:var(--muted)}
+.company-logo{height:22px;background:var(--tag-bg);border:1px solid var(--border);border-radius:5px;padding:3px 8px;font-size:.67rem;font-weight:700;color:var(--muted);display:flex;align-items:center}
+
+/* match score */
+.match-score{display:flex;flex-direction:column;align-items:center;gap:3px}
+.match-ring{width:46px;height:46px;position:relative}
+.match-ring svg{transform:rotate(-90deg)}
+.match-ring .track{fill:none;stroke:var(--tag-bg);stroke-width:3}
+.match-ring .fill{fill:none;stroke:var(--green);stroke-width:3;stroke-linecap:round}
+.match-text{font-size:.67rem;color:var(--muted);text-align:center;line-height:1.3}
+.match-text strong{display:block;font-size:.8rem;color:var(--green);font-weight:700}
+.btn-bookmark{width:34px;height:34px;border-radius:8px;background:transparent;border:1px solid var(--border);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s;font-size:1rem}
+.btn-bookmark:hover{background:var(--amber-light);border-color:#f6cc52}
+.btn-bookmark.saved{background:var(--amber-light);border-color:#f6cc52;color:var(--amber)}
+
+/* card divider */
+.card-divider{height:1px;background:var(--border);margin:16px 0}
+
+/* bottom row */
+.card-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.tpo-info{display:flex;align-items:center;gap:10px}
+.tpo-avatar{width:32px;height:32px;border-radius:50%;background:var(--accent-light);color:var(--accent);font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tpo-detail{display:flex;flex-direction:column;gap:1px}
+.tpo-name{font-size:.8rem;font-weight:600}
+.tpo-role{font-size:.7rem;color:var(--muted)}
+
+/* CTA group */
+.cta-group{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:8px 14px;border-radius:8px;font-size:.79rem;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;border:none;transition:all .18s;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:#1446c0}
+.btn-secondary{background:transparent;color:var(--ink);border:1px solid var(--border)}.btn-secondary:hover{background:var(--bg);border-color:#c0bfb8}
+.btn-green{background:var(--green-light);color:var(--green);border:1px solid #b7edd8}.btn-green:hover{background:#d1f5e8}
+.btn-ghost{background:transparent;color:var(--accent);border:none;padding:8px 6px;font-size:.79rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;transition:opacity .18s}
+.btn-ghost:hover{opacity:.75}
+
+/* contact split */
+.contact-split{display:flex;gap:6px}
+
+/* see more toggle */
+.see-more-btn{display:flex;align-items:center;gap:5px;font-size:.78rem;font-weight:600;color:var(--accent);cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif;padding:0;transition:opacity .2s}
+.see-more-btn:hover{opacity:.7}
+.chevron{display:inline-block;transition:transform .25s}
+.chevron.open{transform:rotate(180deg)}
+
+/* ══════════════════════════════
+   MODAL OVERLAY
+══════════════════════════════ */
+.modal-overlay{position:fixed;inset:0;background:rgba(10,10,10,.55);z-index:500;display:flex;align-items:flex-start;justify-content:center;padding:32px 16px;overflow-y:auto;opacity:0;pointer-events:none;transition:opacity .25s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--white);border-radius:20px;width:100%;max-width:860px;box-shadow:0 20px 60px rgba(0,0,0,.18);transform:translateY(24px);transition:transform .28s ease;overflow:hidden}
+.modal-overlay.open .modal{transform:translateY(0)}
+
+/* modal header */
+.modal-header{padding:28px 32px 0;display:flex;gap:18px;align-items:flex-start;border-bottom:1px solid var(--border);padding-bottom:20px}
+.modal-logo{width:80px;height:80px;border-radius:14px;border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:1.4rem;font-weight:700;color:var(--accent);flex-shrink:0}
+.modal-title-block{flex:1}
+.modal-title{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:700;letter-spacing:-.4px;margin-bottom:6px}
+.modal-close{width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:transparent;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--muted);transition:background .18s}
+.modal-close:hover{background:var(--bg)}
+
+/* modal tabs */
+.modal-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);padding:0 32px}
+.tab{padding:14px 18px;font-size:.85rem;font-weight:600;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .18s,border-color .18s}
+.tab:hover{color:var(--ink)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* modal body */
+.modal-body{padding:28px 32px;max-height:62vh;overflow-y:auto}
+.modal-section{margin-bottom:28px}
+.modal-section-title{font-family:'Fraunces',serif;font-size:1rem;font-weight:600;margin-bottom:14px;letter-spacing:-.3px}
+
+/* summary stats big */
+.summary-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-bottom:0}
+.s-stat{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.s-stat-value{font-size:1.35rem;font-weight:700;letter-spacing:-.5px;margin-bottom:3px}
+.s-stat-value.green{color:var(--green)}.s-stat-value.accent{color:var(--accent)}
+.s-stat-label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+
+/* dept table */
+.dept-table{width:100%;border-collapse:collapse}
+.dept-table th{font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:600;padding:8px 12px;text-align:left;border-bottom:2px solid var(--border);background:var(--bg)}
+.dept-table td{padding:11px 12px;font-size:.83rem;border-bottom:1px solid var(--border);vertical-align:middle}
+.dept-table tr:last-child td{border-bottom:none}
+.dept-table tr:hover td{background:var(--bg)}
+.dept-bar-bg{width:100px;height:5px;background:var(--tag-bg);border-radius:99px;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:6px}
+.dept-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),#60a5fa);border-radius:99px}
+.pct-text{font-size:.78rem;font-weight:600;color:var(--accent)}
+
+/* placement academic row */
+.acad-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:0}
+.acad-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:16px}
+.acad-label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+.acad-value{font-size:1.5rem;font-weight:700;letter-spacing:-.5px}
+.acad-value.green{color:var(--green)}.acad-value.accent{color:var(--accent)}
+.acad-sub{font-size:.75rem;color:var(--muted);margin-top:3px}
+.trend{font-size:.72rem;font-weight:600;padding:2px 7px;border-radius:20px;margin-left:6px}
+.trend.up{background:var(--green-light);color:var(--green)}
+.trend.down{background:var(--red-light);color:var(--red)}
+
+/* contact section in modal */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.contact-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.contact-card-title{font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:600}
+.contact-person{display:flex;align-items:center;gap:10px}
+.c-avatar{width:38px;height:38px;border-radius:50%;background:var(--accent-light);color:var(--accent);font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.c-name{font-size:.85rem;font-weight:600}
+.c-role{font-size:.72rem;color:var(--muted)}
+.contact-actions{display:flex;gap:7px}
+
+/* modal footer */
+.modal-footer{padding:18px 32px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:var(--bg)}
+
+/* tab panels */
+.tab-panel{display:none}.tab-panel.active{display:block}
+
+/* load more */
+.load-more{text-align:center;margin-top:28px}
+.load-more button{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:10px 28px;font-size:.875rem;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;color:var(--ink);transition:all .18s}
+.load-more button:hover{background:var(--bg);border-color:#c0bfb8}
+
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Pro<span>sculpt</span></div>
+  <div class="nav-right">
+    <span class="corp-badge">Corporate</span>
+    <span class="corp-name">Infosys Ltd.</span>
+    <div class="avatar">IN</div>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="page-header">
+    <h1>Discover Colleges</h1>
+    <p><span class="live-dot"></span> 347 colleges available · Bengaluru & nearby regions</p>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <div class="search-wrap">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" placeholder="Search college name…"/>
+    </div>
+    <div class="filter-divider"></div>
+    <select class="filter-select"><option>📍 All Cities</option><option>Bengaluru (214)</option><option>Mysuru (48)</option><option>Hubli (31)</option></select>
+    <select class="filter-select"><option>🎓 College Type</option><option>Engineering (142)</option><option>MBA (88)</option><option>Arts & Science (67)</option></select>
+    <select class="filter-select"><option>🏅 Certifications</option><option>AICTE</option><option>NAAC A+</option><option>NBA</option></select>
+    <div class="filter-divider"></div>
+    <span class="sort-label">Sort by</span>
+    <select class="filter-select" style="min-width:175px"><option>Placement Ratio ↓</option><option>Students Cleared ↓</option><option>Avg Package ↓</option><option>NIRF Rank ↑</option></select>
+  </div>
+
+  <div class="active-filters">
+    <span class="af-label">Active:</span>
+    <span class="af-chip" onclick="this.remove()">Engineering ×</span>
+    <span class="af-chip" onclick="this.remove()">Bengaluru ×</span>
+    <span class="af-chip" onclick="this.remove()">NAAC A+ ×</span>
+    <span class="af-clear" onclick="document.querySelectorAll('.af-chip').forEach(c=>c.remove())">Clear all</span>
+  </div>
+
+  <div class="result-row">
+    <span class="result-count-text"><strong>4 colleges</strong> match your filters</span>
+    <span class="avail-badge"><span class="avail-dot"></span> Live · Updated today</span>
+  </div>
+
+  <!-- ══ COLLEGE LIST ══ -->
+  <div class="college-list">
+
+    <!-- ═══ CARD 1 ═══ -->
+    <div class="college-card">
+      <div class="card-main">
+        <div class="card-content">
+          <div class="college-name" onclick="openModal('rv')">RV College of Engineering</div>
+          <div class="badges-row">
+            <span class="type-pill">Engineering</span>
+            <span class="hired-before">✓ Hired Before</span>
+            <span class="nirf-badge">NIRF #17</span>
+          </div>
+          <div class="college-meta">
+            <span><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Bengaluru, Karnataka</span>
+            <span>·</span><span>Autonomous · VTU</span><span>·</span><span>📅 2025 Batch</span>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat"><span class="stat-value accent">486</span><span class="stat-label">Placeable Now</span></div>
+            <div class="stat"><span class="stat-value accent">412</span><span class="stat-label">Cleared Assessment</span></div>
+            <div class="stat"><span class="stat-value">85%</span><span class="stat-label">Pass Rate</span></div>
+            <div class="stat"><span class="stat-value green">91%</span><span class="stat-label">Placed-to-Joining</span></div>
+            <div class="stat"><span class="stat-value green">78%</span><span class="stat-label">Placed This Yr</span></div>
+            <div class="stat"><span class="stat-value green">₹7.4L</span><span class="stat-label">Avg Package</span></div>
+          </div>
+
+          <div class="ratio-bar-wrap">
+            <span class="ratio-label">Placement % this Academic Year</span>
+            <div class="ratio-bar-bg"><div class="ratio-bar-fill" style="width:78%"></div></div>
+            <span class="ratio-val">78%</span>
+          </div>
+
+          <div class="branch-row">
+            <span class="branch-label">Branches:</span>
+            <span class="branch-chip">CSE <strong>210</strong></span>
+            <span class="branch-chip">ECE <strong>118</strong></span>
+            <span class="branch-chip">Mech <strong>84</strong></span>
+            <span class="branch-chip">Civil <strong>74</strong></span>
+          </div>
+
+          <div class="cert-row">
+            <span class="cert-label">Certifications:</span>
+            <span class="cert-tag">AICTE</span>
+            <span class="cert-tag gold">NAAC A+</span>
+            <span class="cert-tag">NBA</span>
+            <span class="cert-tag">ISO 9001</span>
+          </div>
+
+          <div class="prev-companies">
+            <span class="prev-label">Previously hired by:</span>
+            <span class="company-logo">INFOSYS</span>
+            <span class="company-logo">TCS</span>
+            <span class="company-logo">WIPRO</span>
+            <span class="company-logo">GOOGLE</span>
+            <span class="company-logo">+12 more</span>
+          </div>
+        </div>
+
+        <!-- SIDEBAR: logo + match + bookmark -->
+        <div class="card-sidebar">
+          <div class="college-logo">RV</div>
+          <div class="match-score">
+            <div class="match-ring">
+              <svg viewBox="0 0 46 46" width="46" height="46">
+                <circle class="track" cx="23" cy="23" r="20"/>
+                <circle class="fill" cx="23" cy="23" r="20" stroke-dasharray="113.1" stroke-dashoffset="10.2"/>
+              </svg>
+            </div>
+            <div class="match-text"><strong>91%</strong>Match</div>
+          </div>
+          <button class="btn-bookmark saved" onclick="this.classList.toggle('saved')">🔖</button>
+        </div>
+      </div>
+
+      <div class="card-divider"></div>
+
+      <div class="card-bottom">
+        <div class="tpo-info">
+          <div class="tpo-avatar">SP</div>
+          <div class="tpo-detail">
+            <span class="tpo-name">Dr. Shalini Prasad</span>
+            <span class="tpo-role">Training & Placement Officer</span>
+          </div>
+        </div>
+        <div class="cta-group">
+          <button class="see-more-btn" onclick="openModal('rv')">
+            See Full Profile <span class="chevron">↗</span>
+          </button>
+          <div class="contact-split">
+            <button class="btn btn-secondary" onclick="openModal('rv','contact')">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              Mail College
+            </button>
+            <button class="btn btn-secondary" onclick="openModal('rv','contact')">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.63 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              Call TPO
+            </button>
+          </div>
+          <button class="btn btn-secondary" onclick="openModal('rv','students')">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            View Students
+          </button>
+          <button class="btn btn-primary" onclick="openModal('rv','opportunity')">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Post Opportunity
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ CARD 2 ═══ -->
+    <div class="college-card">
+      <div class="card-main">
+        <div class="card-content">
+          <div class="college-name" onclick="openModal('christ')">Christ University — School of Business</div>
+          <div class="badges-row">
+            <span class="type-pill">MBA</span>
+            <span class="nirf-badge">NIRF #28</span>
+          </div>
+          <div class="college-meta">
+            <span><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Bengaluru, Karnataka</span>
+            <span>·</span><span>Deemed University</span><span>·</span><span>📅 2025 Batch</span>
+          </div>
+          <div class="stats-grid">
+            <div class="stat"><span class="stat-value accent">310</span><span class="stat-label">Placeable Now</span></div>
+            <div class="stat"><span class="stat-value accent">275</span><span class="stat-label">Cleared Assessment</span></div>
+            <div class="stat"><span class="stat-value">89%</span><span class="stat-label">Pass Rate</span></div>
+            <div class="stat"><span class="stat-value green">88%</span><span class="stat-label">Placed-to-Joining</span></div>
+            <div class="stat"><span class="stat-value green">72%</span><span class="stat-label">Placed This Yr</span></div>
+            <div class="stat"><span class="stat-value green">₹9.2L</span><span class="stat-label">Avg Package</span></div>
+          </div>
+          <div class="ratio-bar-wrap">
+            <span class="ratio-label">Placement % this Academic Year</span>
+            <div class="ratio-bar-bg"><div class="ratio-bar-fill" style="width:72%"></div></div>
+            <span class="ratio-val">72%</span>
+          </div>
+          <div class="branch-row">
+            <span class="branch-label">Specialisations:</span>
+            <span class="branch-chip">Finance <strong>105</strong></span>
+            <span class="branch-chip">Marketing <strong>98</strong></span>
+            <span class="branch-chip">HR <strong>72</strong></span>
+            <span class="branch-chip">Operations <strong>35</strong></span>
+          </div>
+          <div class="cert-row">
+            <span class="cert-label">Certifications:</span>
+            <span class="cert-tag">AICTE</span><span class="cert-tag gold">NAAC A+</span><span class="cert-tag">UGC</span><span class="cert-tag">AACSB</span>
+          </div>
+          <div class="prev-companies">
+            <span class="prev-label">Previously hired by:</span>
+            <span class="company-logo">DELOITTE</span><span class="company-logo">KPMG</span><span class="company-logo">EY</span><span class="company-logo">+8 more</span>
+          </div>
+        </div>
+        <div class="card-sidebar">
+          <div class="college-logo">CU</div>
+          <div class="match-score">
+            <div class="match-ring">
+              <svg viewBox="0 0 46 46" width="46" height="46">
+                <circle class="track" cx="23" cy="23" r="20"/>
+                <circle class="fill" cx="23" cy="23" r="20" stroke-dasharray="113.1" stroke-dashoffset="20.4"/>
+              </svg>
+            </div>
+            <div class="match-text"><strong>82%</strong>Match</div>
+          </div>
+          <button class="btn-bookmark" onclick="this.classList.toggle('saved')">🔖</button>
+        </div>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-bottom">
+        <div class="tpo-info">
+          <div class="tpo-avatar">RK</div>
+          <div class="tpo-detail">
+            <span class="tpo-name">Prof. Rajan Kumar</span>
+            <span class="tpo-role">Placement Head</span>
+          </div>
+        </div>
+        <div class="cta-group">
+          <button class="see-more-btn" onclick="openModal('christ')">See Full Profile <span class="chevron">↗</span></button>
+          <div class="contact-split">
+            <button class="btn btn-secondary"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Mail College</button>
+            <button class="btn btn-secondary"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.63 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Call TPO</button>
+          </div>
+          <button class="btn btn-secondary"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>View Students</button>
+          <button class="btn btn-primary"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Post Opportunity</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ CARD 3 (BMS) ═══ -->
+    <div class="college-card">
+      <div class="card-main">
+        <div class="card-content">
+          <div class="college-name" onclick="openModal('bms')">BMS College of Engineering</div>
+          <div class="badges-row">
+            <span class="type-pill">Engineering</span>
+            <span class="hired-before">✓ Hired Before</span>
+            <span class="nirf-badge">NIRF #41</span>
+          </div>
+          <div class="college-meta">
+            <span><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Bengaluru, Karnataka</span>
+            <span>·</span><span>Aided · VTU</span><span>·</span><span>📅 2025 Batch</span>
+          </div>
+          <div class="stats-grid">
+            <div class="stat"><span class="stat-value accent">520</span><span class="stat-label">Placeable Now</span></div>
+            <div class="stat"><span class="stat-value accent">438</span><span class="stat-label">Cleared Assessment</span></div>
+            <div class="stat"><span class="stat-value">84%</span><span class="stat-label">Pass Rate</span></div>
+            <div class="stat"><span class="stat-value green">84%</span><span class="stat-label">Placed-to-Joining</span></div>
+            <div class="stat"><span class="stat-value green">66%</span><span class="stat-label">Placed This Yr</span></div>
+            <div class="stat"><span class="stat-value green">₹6.8L</span><span class="stat-label">Avg Package</span></div>
+          </div>
+          <div class="ratio-bar-wrap">
+            <span class="ratio-label">Placement % this Academic Year</span>
+            <div class="ratio-bar-bg"><div class="ratio-bar-fill" style="width:66%"></div></div>
+            <span class="ratio-val">66%</span>
+          </div>
+          <div class="branch-row">
+            <span class="branch-label">Branches:</span>
+            <span class="branch-chip">CSE <strong>180</strong></span>
+            <span class="branch-chip">ISE <strong>120</strong></span>
+            <span class="branch-chip">ECE <strong>130</strong></span>
+            <span class="branch-chip">Mech <strong>90</strong></span>
+          </div>
+          <div class="cert-row">
+            <span class="cert-label">Certifications:</span>
+            <span class="cert-tag">AICTE</span><span class="cert-tag gold">NAAC A</span><span class="cert-tag">NBA</span>
+          </div>
+          <div class="prev-companies">
+            <span class="prev-label">Previously hired by:</span>
+            <span class="company-logo">INFOSYS</span><span class="company-logo">ACCENTURE</span><span class="company-logo">L&T</span><span class="company-logo">+9 more</span>
+          </div>
+        </div>
+        <div class="card-sidebar">
+          <div class="college-logo">BMS</div>
+          <div class="match-score">
+            <div class="match-ring">
+              <svg viewBox="0 0 46 46" width="46" height="46">
+                <circle class="track" cx="23" cy="23" r="20"/>
+                <circle class="fill" cx="23" cy="23" r="20" stroke-dasharray="113.1" stroke-dashoffset="24.8"/>
+              </svg>
+            </div>
+            <div class="match-text"><strong>78%</strong>Match</div>
+          </div>
+          <button class="btn-bookmark" onclick="this.classList.toggle('saved')">🔖</button>
+        </div>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-bottom">
+        <div class="tpo-info">
+          <div class="tpo-avatar">AM</div>
+          <div class="tpo-detail">
+            <span class="tpo-name">Mr. Arun Murthy</span>
+            <span class="tpo-role">Placement Officer</span>
+          </div>
+        </div>
+        <div class="cta-group">
+          <button class="see-more-btn" onclick="openModal('bms')">See Full Profile <span class="chevron">↗</span></button>
+          <div class="contact-split">
+            <button class="btn btn-secondary"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Mail College</button>
+            <button class="btn btn-secondary"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.63 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Call TPO</button>
+          </div>
+          <button class="btn btn-secondary"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>View Students</button>
+          <button class="btn btn-primary"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Post Opportunity</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /college-list -->
+  <div class="load-more"><button>Load more colleges ↓</button></div>
+</div><!-- /page -->
+
+<!-- ══════════════════════════════════════
+     MODAL — COLLEGE FULL PROFILE
+══════════════════════════════════════ -->
+<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+  <div class="modal" id="modalBox">
+
+    <!-- HEADER -->
+    <div class="modal-header">
+      <div class="modal-logo" id="modalLogo">RV</div>
+      <div class="modal-title-block">
+        <div class="modal-title" id="modalTitle">RV College of Engineering</div>
+        <div class="badges-row" id="modalBadges">
+          <span class="type-pill">Engineering</span>
+          <span class="hired-before">✓ Hired Before</span>
+          <span class="nirf-badge">NIRF #17</span>
+        </div>
+        <div class="college-meta" style="margin-top:6px" id="modalMeta">
+          <span>📍 Bengaluru, Karnataka</span><span>·</span><span>Autonomous · VTU</span><span>·</span><span>📅 2025 Batch</span>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+
+    <!-- TABS -->
+    <div class="modal-tabs">
+      <div class="tab active" onclick="switchTab('overview',this)">Overview</div>
+      <div class="tab" onclick="switchTab('departments',this)">Departments</div>
+      <div class="tab" onclick="switchTab('placement',this)">Placement Stats</div>
+      <div class="tab" onclick="switchTab('contact',this)">Contact</div>
+      <div class="tab" onclick="switchTab('opportunity',this)">Post Opportunity</div>
+    </div>
+
+    <!-- BODY -->
+    <div class="modal-body">
+
+      <!-- OVERVIEW TAB -->
+      <div class="tab-panel active" id="tab-overview">
+        <div class="modal-section">
+          <div class="modal-section-title">At a Glance</div>
+          <div class="summary-stats">
+            <div class="s-stat"><div class="s-stat-value accent" id="m-placeable">486</div><div class="s-stat-label">Placeable Now</div></div>
+            <div class="s-stat"><div class="s-stat-value" id="m-cleared">412</div><div class="s-stat-label">Cleared Assessment</div></div>
+            <div class="s-stat"><div class="s-stat-value" id="m-passrate">85%</div><div class="s-stat-label">Pass Rate</div></div>
+            <div class="s-stat"><div class="s-stat-value green" id="m-ratio">91%</div><div class="s-stat-label">Placed-to-Joining</div></div>
+            <div class="s-stat"><div class="s-stat-value green" id="m-acad">78%</div><div class="s-stat-label">Placed This Yr</div></div>
+            <div class="s-stat"><div class="s-stat-value green" id="m-pkg">₹7.4L</div><div class="s-stat-label">Avg Package</div></div>
+          </div>
+        </div>
+        <div class="modal-section">
+          <div class="modal-section-title">Placement % — This Academic Year</div>
+          <div class="acad-row">
+            <div class="acad-card">
+              <div class="acad-label">Students Placed So Far</div>
+              <div class="acad-value green" id="m-placed-count">379 <span class="trend up">↑ 12% vs last yr</span></div>
+              <div class="acad-sub">out of 486 placeable students</div>
+            </div>
+            <div class="acad-card">
+              <div class="acad-label">Placement % This Year</div>
+              <div class="acad-value accent">78%</div>
+              <div class="acad-sub">Target: 90% by March 2025</div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-section">
+          <div class="modal-section-title">Certifications</div>
+          <div class="cert-row">
+            <span class="cert-tag">AICTE</span>
+            <span class="cert-tag gold">NAAC A+</span>
+            <span class="cert-tag">NBA</span>
+            <span class="cert-tag">ISO 9001</span>
+          </div>
+        </div>
+        <div class="modal-section">
+          <div class="modal-section-title">Previously Hired By</div>
+          <div class="prev-companies">
+            <span class="company-logo">INFOSYS</span><span class="company-logo">TCS</span>
+            <span class="company-logo">WIPRO</span><span class="company-logo">GOOGLE</span>
+            <span class="company-logo">MICROSOFT</span><span class="company-logo">AMAZON</span>
+            <span class="company-logo">BOSCH</span><span class="company-logo">ABB</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- DEPARTMENTS TAB -->
+      <div class="tab-panel" id="tab-departments">
+        <div class="modal-section">
+          <div class="modal-section-title">Department-wise Breakdown</div>
+          <table class="dept-table" id="deptTable">
+            <thead>
+              <tr>
+                <th>Department</th>
+                <th>Placeable</th>
+                <th>Cleared</th>
+                <th>Pass Rate</th>
+                <th>Placed</th>
+                <th>Placed-to-Join %</th>
+              </tr>
+            </thead>
+            <tbody id="deptTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PLACEMENT STATS TAB -->
+      <div class="tab-panel" id="tab-placement">
+        <div class="modal-section">
+          <div class="modal-section-title">Academic Year Placement Summary</div>
+          <div class="acad-row" style="margin-bottom:16px">
+            <div class="acad-card"><div class="acad-label">Placed This Year</div><div class="acad-value green">379</div><div class="acad-sub">78% of placeable students</div></div>
+            <div class="acad-card"><div class="acad-label">Yet to be Placed</div><div class="acad-value accent">107</div><div class="acad-sub">22% — active pipeline</div></div>
+          </div>
+          <div class="acad-row">
+            <div class="acad-card"><div class="acad-label">Avg Package (CTC)</div><div class="acad-value green">₹7.4L</div><div class="acad-sub">Highest: ₹42L (Google)</div></div>
+            <div class="acad-card"><div class="acad-label">Placed-to-Joining Ratio</div><div class="acad-value accent">91%</div><div class="acad-sub">9% dropouts after offer</div></div>
+          </div>
+        </div>
+        <div class="modal-section">
+          <div class="modal-section-title">Year-on-Year Trend</div>
+          <table class="dept-table">
+            <thead><tr><th>Year</th><th>Placeable</th><th>Placed</th><th>%</th><th>Avg Pkg</th></tr></thead>
+            <tbody>
+              <tr><td>2024–25 (ongoing)</td><td>486</td><td>379</td><td><span class="pct-text">78%</span></td><td>₹7.4L</td></tr>
+              <tr><td>2023–24</td><td>462</td><td>370</td><td><span class="pct-text">80%</span></td><td>₹6.9L</td></tr>
+              <tr><td>2022–23</td><td>440</td><td>336</td><td><span class="pct-text">76%</span></td><td>₹6.2L</td></tr>
+              <tr><td>2021–22</td><td>415</td><td>290</td><td><span class="pct-text">70%</span></td><td>₹5.8L</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CONTACT TAB -->
+      <div class="tab-panel" id="tab-contact">
+        <div class="modal-section">
+          <div class="modal-section-title">College Contacts</div>
+          <div class="contact-grid">
+            <div class="contact-card">
+              <div class="contact-card-title">Training & Placement Officer</div>
+              <div class="contact-person">
+                <div class="c-avatar">SP</div>
+                <div><div class="c-name">Dr. Shalini Prasad</div><div class="c-role">TPO · Ext. 204</div></div>
+              </div>
+              <div class="contact-actions">
+                <button class="btn btn-secondary" style="flex:1"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Mail TPO</button>
+                <button class="btn btn-green" style="flex:1"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.63 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg> Call TPO</button>
+              </div>
+            </div>
+            <div class="contact-card">
+              <div class="contact-card-title">Principal / Director</div>
+              <div class="contact-person">
+                <div class="c-avatar">KR</div>
+                <div><div class="c-name">Dr. K. Ramachandra</div><div class="c-role">Principal · Ext. 101</div></div>
+              </div>
+              <div class="contact-actions">
+                <button class="btn btn-secondary" style="flex:1"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Mail Principal</button>
+                <button class="btn btn-green" style="flex:1"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.63 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg> Call Principal</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- POST OPPORTUNITY TAB -->
+      <div class="tab-panel" id="tab-opportunity">
+        <div class="modal-section">
+          <div class="modal-section-title">Post an Opportunity</div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div style="display:flex;flex-direction:column;gap:5px">
+                <label style="font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">Role Title</label>
+                <input type="text" placeholder="e.g. Software Engineer" style="border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:.875rem;font-family:'DM Sans',sans-serif;outline:none;background:var(--bg)"/>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:5px">
+                <label style="font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">CTC Offered</label>
+                <input type="text" placeholder="e.g. ₹6–8 LPA" style="border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:.875rem;font-family:'DM Sans',sans-serif;outline:none;background:var(--bg)"/>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:5px">
+                <label style="font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">Eligible Branches</label>
+                <input type="text" placeholder="e.g. CSE, ECE, ISE" style="border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:.875rem;font-family:'DM Sans',sans-serif;outline:none;background:var(--bg)"/>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:5px">
+                <label style="font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">Drive Date</label>
+                <input type="date" style="border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:.875rem;font-family:'DM Sans',sans-serif;outline:none;background:var(--bg)"/>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:5px">
+              <label style="font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">Job Description</label>
+              <textarea placeholder="Describe the role, requirements, and expectations…" rows="4" style="border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:.875rem;font-family:'DM Sans',sans-serif;outline:none;resize:vertical;background:var(--bg)"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /modal-body -->
+
+    <!-- FOOTER -->
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">← Back to List</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-secondary" onclick="switchTab('contact',document.querySelector('.tab:nth-child(4)'))">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.63 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          Contact College
+        </button>
+        <button class="btn btn-primary" onclick="switchTab('opportunity',document.querySelector('.tab:nth-child(5)'))">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Post Opportunity
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /modal -->
+</div><!-- /overlay -->
+
+<script>
+const colleges = {
+  rv: {
+    logo:'RV', name:'RV College of Engineering',
+    badges:`<span class="type-pill">Engineering</span><span class="hired-before">✓ Hired Before</span><span class="nirf-badge">NIRF #17</span>`,
+    meta:`<span>📍 Bengaluru, Karnataka</span><span>·</span><span>Autonomous · VTU</span><span>·</span><span>📅 2025 Batch</span>`,
+    placeable:'486', cleared:'412', passrate:'85%', ratio:'91%', acad:'78%', pkg:'₹7.4L',
+    placedCount:'379 <span class="trend up">↑ 12% vs last yr</span>',
+    depts:[
+      {name:'Computer Science & Engg',p:210,c:186,pass:'89%',placed:168,ratio:'91%'},
+      {name:'Electronics & Comm',p:118,c:98,pass:'83%',placed:88,ratio:'87%'},
+      {name:'Mechanical Engg',p:84,c:68,pass:'81%',placed:57,ratio:'82%'},
+      {name:'Civil Engg',p:74,c:60,pass:'81%',placed:50,ratio:'79%'},
+    ]
+  },
+  christ: {
+    logo:'CU', name:'Christ University — School of Business',
+    badges:`<span class="type-pill">MBA</span><span class="nirf-badge">NIRF #28</span>`,
+    meta:`<span>📍 Bengaluru, Karnataka</span><span>·</span><span>Deemed University</span><span>·</span><span>📅 2025 Batch</span>`,
+    placeable:'310', cleared:'275', passrate:'89%', ratio:'88%', acad:'72%', pkg:'₹9.2L',
+    placedCount:'223 <span class="trend up">↑ 8% vs last yr</span>',
+    depts:[
+      {name:'Finance',p:105,c:95,pass:'90%',placed:80,ratio:'90%'},
+      {name:'Marketing',p:98,c:88,pass:'90%',placed:72,ratio:'88%'},
+      {name:'Human Resources',p:72,c:60,pass:'83%',placed:48,ratio:'82%'},
+      {name:'Operations',p:35,c:32,pass:'91%',placed:23,ratio:'77%'},
+    ]
+  },
+  bms: {
+    logo:'BMS', name:'BMS College of Engineering',
+    badges:`<span class="type-pill">Engineering</span><span class="hired-before">✓ Hired Before</span><span class="nirf-badge">NIRF #41</span>`,
+    meta:`<span>📍 Bengaluru, Karnataka</span><span>·</span><span>Aided · VTU</span><span>·</span><span>📅 2025 Batch</span>`,
+    placeable:'520', cleared:'438', passrate:'84%', ratio:'84%', acad:'66%', pkg:'₹6.8L',
+    placedCount:'343 <span class="trend up">↑ 5% vs last yr</span>',
+    depts:[
+      {name:'Computer Science & Engg',p:180,c:155,pass:'86%',placed:130,ratio:'85%'},
+      {name:'Info Science & Engg',p:120,c:100,pass:'83%',placed:82,ratio:'82%'},
+      {name:'Electronics & Comm',p:130,c:106,pass:'82%',placed:88,ratio:'83%'},
+      {name:'Mechanical Engg',p:90,c:77,pass:'86%',placed:43,ratio:'79%'},
+    ]
+  }
+};
+
+function openModal(id, tab='overview') {
+  const c = colleges[id];
+  if (!c) return;
+  document.getElementById('modalLogo').textContent = c.logo;
+  document.getElementById('modalTitle').textContent = c.name;
+  document.getElementById('modalBadges').innerHTML = c.badges;
+  document.getElementById('modalMeta').innerHTML = c.meta;
+  document.getElementById('m-placeable').textContent = c.placeable;
+  document.getElementById('m-cleared').textContent = c.cleared;
+  document.getElementById('m-passrate').textContent = c.passrate;
+  document.getElementById('m-ratio').textContent = c.ratio;
+  document.getElementById('m-acad').textContent = c.acad;
+  document.getElementById('m-pkg').textContent = c.pkg;
+  document.getElementById('m-placed-count').innerHTML = c.placedCount;
+
+  // Build dept table
+  const tbody = document.getElementById('deptTableBody');
+  tbody.innerHTML = c.depts.map(d => {
+    const pct = Math.round((d.placed / d.p) * 100);
+    return `<tr>
+      <td><strong>${d.name}</strong></td>
+      <td>${d.p}</td>
+      <td>${d.c}</td>
+      <td>${d.pass}</td>
+      <td>${d.placed}</td>
+      <td>
+        <div class="dept-bar-bg"><div class="dept-bar-fill" style="width:${pct}%"></div></div>
+        <span class="pct-text">${d.ratio}</span>
+      </td>
+    </tr>`;
+  }).join('');
+
+  // switch tab
+  const tabMap = {overview:0, departments:1, placement:2, contact:3, opportunity:4};
+  const tabs = document.querySelectorAll('.tab');
+  switchTab(tab, tabs[tabMap[tab]||0]);
+
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+function switchTab(name, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const panel = document.getElementById('tab-' + name);
+  if (panel) panel.classList.add('active');
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+</script>
+</body>
+</html>
